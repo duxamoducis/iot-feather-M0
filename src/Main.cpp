@@ -112,6 +112,9 @@ void OnButtonPress(ButtonType_t btn)
     break;
   case B:
     BME280_Read();
+
+    if(BME_ACTIVE)
+    {
     Display_ShowData(INDOOR);
     Serial.println("INDOOR MEASUREMENTS - BME280");
     Serial.println("Temperature:");
@@ -120,6 +123,13 @@ void OnButtonPress(ButtonType_t btn)
     Serial.println(BME280_humidity());
     Serial.println("Pressure:");
     Serial.println(BME280_pressure());
+    }
+    else
+    {
+      Display_Clear();
+      Display_ShowData(ERROR);
+    }
+
     delay(7000);
     Display_Clear();
     break;
@@ -215,6 +225,11 @@ void Display_ShowData(DataType_t data)
     Display_Clear();
     display.println("Indoor - MCP9808");
     display.println(indoor_temperature);
+    display.display();
+    break;
+  case ERROR:
+    Display_Clear();
+    display.println("Error! Check wiring!");
     display.display();
     break;
   default:

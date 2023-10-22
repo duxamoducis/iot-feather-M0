@@ -24,6 +24,7 @@ typedef enum
   AROUND,
   INDOOR,
   INDOOR_TEMP_PRECISE,
+  ERROR,
 } DataType_t;
 
 extern String location;
@@ -34,6 +35,8 @@ extern String humidity;
 extern String indoor_humidity;
 extern String indoor_pressure;
 extern String indoor_temperature;
+
+extern bool BME_ACTIVE;
 
 extern void OnButtonPress(ButtonType_t btn);
 extern void Display_ShowData(DataType_t data);

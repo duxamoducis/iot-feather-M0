@@ -20,6 +20,7 @@ void BME280_Init()
      
     if (!bme.begin())
     {
+        BME_ACTIVE = false;
         Serial.println(F("Could not find a valid BME280 sensor, check wiring!"));
     }
     else
