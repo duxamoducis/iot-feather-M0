@@ -1,6 +1,7 @@
 #include "WebClient.h"
 #include "Display.h"
 
+int city = 0;
 char ssid[] = WIFI_SSID;
 char pass[] = WIFI_PASS;
 bool req_error = false;
@@ -14,11 +15,6 @@ void PrintWiFiStatus();
 void WiFiSetup()
 {
   WiFi.setPins(WIFI_SHIELD_PINS);
-
-  /* Wait for Serial to init*/
-  while (!Serial)
-  {
-  }
 
   /* Check if shield is present */
   if (WiFi.status() == WL_NO_SHIELD)
@@ -60,6 +56,7 @@ void PrintWiFiStatus()
 
 void ApiRequest()
 {
+  city ++;
   client.setTimeout(10000); /* 10s connection and request timeout */
   Serial.println("\nAttempting connection...");
 
@@ -69,7 +66,22 @@ void ApiRequest()
   {
     Serial.println("\nConnected to " + String(host_name));
     Display_FetchData();
-    client.println(request);
+    /* City order */
+    if(city == 1)
+    {
+      client.println(requestGda);
+    }
+    else if (city == 2)
+    {
+      client.println(requestWaw);
+    }
+    else if (city == 3)
+    {
+      city = 0;
+      client.println(requestKra);
+    }
+    else;
+
     client.println("Host: " + String(host_name));
     client.println("Connection: close");
     client.println();

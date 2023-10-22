@@ -14,14 +14,19 @@ bool BME_ACTIVE = false;
 Adafruit_MCP9808 mcp;
 bool MCP_ACTIVE = false;
 
+
 void BME280_Init()
 {
+     
     if (!bme.begin())
     {
         Serial.println(F("Could not find a valid BME280 sensor, check wiring!"));
     }
     else
+    {
         BME_ACTIVE = true;
+        Serial.println("BME280 sensor is active!");
+    }
 }
 
 float BME280_temperature()
@@ -61,6 +66,7 @@ float BME280_humidity()
 
 void BME280_Read()
 {
+    BME280_Init();
     indoor_humidity = String(BME280_humidity());
     indoor_humidity.concat("%");
     indoor_temperature = String(BME280_temperature());
@@ -79,6 +85,7 @@ void MCP9808_Init()
     {
         mcp.setResolution(3);
         MCP_ACTIVE = true;
+        Serial.println("MCP9808 sensor is active!");
     }
 }
 

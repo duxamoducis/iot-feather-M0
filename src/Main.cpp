@@ -1,4 +1,5 @@
 #include "Main.h"
+#include "WebClient.h"
 
 /*
  * @brief : Private declarations
@@ -39,17 +40,22 @@ void setup()
   /* Begins Serial at 115200 baud */
   Serial.begin(115200);
 
-  /* Initialize BME280 sensor */
-  BME280_Init();
-
-  /* Initialize MCP9808 sensor */
-  MCP9808_Init();
+  /* Wait for Serial to init*/
+  while (!Serial)
+    {
+    }
 
   /* Initialize display and clear it */
   Display_InitScreen();
   Display_Clear();
   Display_InitIO();
   Display_InitText();
+
+   /* Initialize BME280 sensor */
+  BME280_Init();
+  
+  /* Initialize MCP9808 sensor */
+  MCP9808_Init();
 
   /* WiFi client setup, WiFi network connection */
   WiFiSetup();
