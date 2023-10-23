@@ -3,7 +3,7 @@ Embedded Systems IOT project that utilizes Adafruit Feather M0, OpenWeatherMap
 to create a simple home weather station. Created for *IOT: Internet of Things*
 course @ WUT Warsaw University of Technology.
 
-Visit the [Wiki](https://github.com/utbrott/iot-feather/wiki) to read more about the project.
+Visit the [Wiki](https://github.com/duxamoducis/iot-feather-M0/wiki) to read more about the project.
 <h6>Warning: Currently project's Wiki is only in Polish, as the course is in Polish</h6>
 
 # Features
