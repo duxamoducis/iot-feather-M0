@@ -16,6 +16,7 @@ String humidity;
 String indoor_humidity;
 String indoor_pressure;
 String indoor_temperature;
+String visible_light_sensor;
 ButtonType_t flag = NOT_PRESSED; // A button interrupt flag
 clock_t last_request;
 
@@ -55,7 +56,10 @@ void setup()
   BME280_Init();
   
   /* Initialize MCP9808 sensor */
-  MCP9808_Init();
+  //MCP9808_Init();
+
+ /* Initialize AS7262 sensor */
+  AS7262_Init();
 
   /* WiFi client setup, WiFi network connection */
   WiFiSetup();
@@ -134,12 +138,25 @@ void OnButtonPress(ButtonType_t btn)
     Display_Clear();
     break;
   case C:
-    MCP9808_Read();
+  /* MCP9808_Read();
     Display_ShowData(INDOOR_TEMP_PRECISE);
     Serial.println("INDOOR TEMPERATURE - MCP9808");
     Serial.println("Precise temperature:");
     Serial.println(MCP9808_temperature());
     delay(2000);
+    Display_Clear();
+  */
+    AS7262_Read();
+    if(AMS_ACTIVE)
+    {
+      Display_ShowData(VISIBLE_LIGHT_SENSOR);
+    }
+    else
+    {
+      Display_Clear();
+      Display_ShowData(ERROR);
+    }
+    delay(7000);
     Display_Clear();
     break;
   default:
@@ -224,6 +241,12 @@ void Display_ShowData(DataType_t data)
   case INDOOR_TEMP_PRECISE:
     Display_Clear();
     display.println("Indoor - MCP9808");
+    display.println(indoor_temperature);
+    display.display();
+    break;
+  case VISIBLE_LIGHT_SENSOR:
+    Display_Clear();
+    display.println("Light sensor - AS7262");
     display.println(indoor_temperature);
     display.display();
     break;

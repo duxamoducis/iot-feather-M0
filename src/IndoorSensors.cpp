@@ -11,8 +11,11 @@ sensors_event_t temp_event,
 
 bool BME_ACTIVE = false;
 
-Adafruit_MCP9808 mcp;
-bool MCP_ACTIVE = false;
+//Adafruit_MCP9808 mcp;
+//bool MCP_ACTIVE = false;
+Adafruit_AS726x ams;
+bool AMS_ACTIVE = false;
+uint16_t sensorValues[AS726x_NUM_CHANNELS];
 
 
 void BME280_Init()
@@ -75,7 +78,7 @@ void BME280_Read()
     indoor_pressure = String(BME280_pressure());
     indoor_pressure.concat(" hPa");
 }
-
+/*
 void MCP9808_Init()
 {
     if (!mcp.begin(0x18))
@@ -108,4 +111,62 @@ void MCP9808_Read()
     indoor_temperature = String(MCP9808_temperature());
     indoor_temperature.concat(" *C");
     indoor_pressure = String();
+}
+*/
+void AS7262_Init()
+{
+     
+    if (!ams.begin())
+    {
+        AMS_ACTIVE = false;
+        Serial.println(F("Could not find a valid AS7262 sensor, check wiring!"));
+    }
+    else
+    {
+        AMS_ACTIVE = true;
+        Serial.println("AS7262 sensor is active!");
+    }
+}
+float AS7262_sensorvalue()
+{
+    if (AMS_ACTIVE)
+    {
+        //read the device temperature
+        uint8_t temp = ams.readTemperature();
+
+        //ams.drvOn(); //uncomment this if you want to use the driver LED for readings
+        ams.startMeasurement(); //begin a measurement
+
+        //wait till data is available
+        bool rdy = false;
+        while(!rdy){
+        delay(5);
+        rdy = ams.dataReady();
+        }
+        //ams.drvOff(); //uncomment this if you want to use the driver LED for readings
+
+        //read the values!
+        ams.readRawValues(sensorValues);
+        //ams.readCalibratedValues(calibratedValues);
+
+        Serial.print("Temp: "); Serial.print(temp);
+        Serial.print(" Violet: "); Serial.print(sensorValues[AS726x_VIOLET]);
+        Serial.print(" Blue: "); Serial.print(sensorValues[AS726x_BLUE]);
+        Serial.print(" Green: "); Serial.print(sensorValues[AS726x_GREEN]);
+        Serial.print(" Yellow: "); Serial.print(sensorValues[AS726x_YELLOW]);
+        Serial.print(" Orange: "); Serial.print(sensorValues[AS726x_ORANGE]);
+        Serial.print(" Red: "); Serial.print(sensorValues[AS726x_RED]);
+        Serial.println();
+        return temp;
+    }
+    else
+    {   
+        return 0;
+    }
+}
+void AS7262_Read()
+{
+    AS7262_Init();
+    indoor_temperature = String(AS7262_sensorvalue());
+    indoor_temperature.concat(" *C");
 }
