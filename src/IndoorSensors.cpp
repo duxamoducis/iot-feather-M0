@@ -164,9 +164,24 @@ float AS7262_sensorvalue()
         return 0;
     }
 }
+
+
 void AS7262_Read()
 {
     AS7262_Init();
     indoor_temperature = String(AS7262_sensorvalue());
     indoor_temperature.concat(" *C");
+    spectrum = "V:";
+    spectrum.concat(sensorValues[AS726x_VIOLET]);
+    spectrum.concat(" B:");
+    spectrum.concat(sensorValues[AS726x_BLUE]);
+    spectrum.concat(" G:");
+    spectrum.concat(sensorValues[AS726x_GREEN]);
+    spectrum.concat("\nY:");
+    spectrum.concat(sensorValues[AS726x_YELLOW]);
+    spectrum.concat(" O:");
+    spectrum.concat(sensorValues[AS726x_ORANGE]);
+    spectrum.concat(" R:");
+    spectrum.concat(sensorValues[AS726x_RED]);
+
 }

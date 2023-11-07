@@ -36,6 +36,7 @@ extern String humidity;
 extern String indoor_humidity;
 extern String indoor_pressure;
 extern String indoor_temperature;
+extern String spectrum;
 
 extern bool BME_ACTIVE;
 extern bool AMS_ACTIVE;

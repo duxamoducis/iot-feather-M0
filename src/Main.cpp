@@ -16,6 +16,7 @@ String humidity;
 String indoor_humidity;
 String indoor_pressure;
 String indoor_temperature;
+String spectrum;
 String visible_light_sensor;
 ButtonType_t flag = NOT_PRESSED; // A button interrupt flag
 clock_t last_request;
@@ -248,6 +249,7 @@ void Display_ShowData(DataType_t data)
     Display_Clear();
     display.println("Light sensor - AS7262");
     display.println(indoor_temperature);
+    display.println(spectrum);
     display.display();
     break;
   case ERROR:
