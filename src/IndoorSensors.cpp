@@ -18,17 +18,23 @@ bool AMS_ACTIVE = false;
 uint16_t sensorValues[AS726x_NUM_CHANNELS];
 
 
+BH1750 bh;
+bool BH_ACTIVE = false;
+//float lux = bh.readLightLevel();
+
 void BME280_Init()
 {
      
     if (!bme.begin())
     {
         BME_ACTIVE = false;
+        Serial.println();
         Serial.println(F("Could not find a valid BME280 sensor, check wiring!"));
     }
     else
     {
         BME_ACTIVE = true;
+        Serial.println();
         Serial.println("BME280 sensor is active!");
     }
 }
@@ -77,6 +83,15 @@ void BME280_Read()
     indoor_temperature.concat(" *C");
     indoor_pressure = String(BME280_pressure());
     indoor_pressure.concat(" hPa");
+
+    Serial.println("INDOOR MEASUREMENTS - BME280");
+    Serial.println("Temperature:");
+    Serial.println(BME280_temperature());
+    Serial.println("Humidity:");
+    Serial.println(BME280_humidity());
+    Serial.println("Pressure:");
+    Serial.println(BME280_pressure());
+    Serial.println();
 }
 /*
 void MCP9808_Init()
@@ -119,11 +134,13 @@ void AS7262_Init()
     if (!ams.begin())
     {
         AMS_ACTIVE = false;
+        Serial.println();
         Serial.println(F("Could not find a valid AS7262 sensor, check wiring!"));
     }
     else
     {
         AMS_ACTIVE = true;
+        Serial.println();
         Serial.println("AS7262 sensor is active!");
     }
 }
@@ -184,4 +201,49 @@ void AS7262_Read()
     spectrum.concat(" R:");
     spectrum.concat(sensorValues[AS726x_RED]);
 
+}
+
+
+void BH1750_Init()
+{
+     
+    if (!bh.begin())
+    {
+        BH_ACTIVE = false;
+        Serial.println();
+        Serial.println(F("Could not find a valid BH1750 sensor, check wiring!"));
+    }
+    else
+    {
+        BH_ACTIVE = true;
+        Serial.println();
+        Serial.println("BH1750 sensor is active!");
+    }
+}
+
+
+float BH_light()
+{
+    if (BH_ACTIVE)
+    {
+
+        float lux = bh.readLightLevel();
+        return lux;
+    }
+    else
+        return .0;
+}
+
+void BH1750_Read()
+{
+    BH1750_Init();
+    light = String(BH_light());
+    light.concat(" lx");
+
+    Serial.println("INDOOR MEASUREMENTS - BH1750");
+    Serial.println("Light:");
+    Serial.print(BH_light());
+    Serial.println(" lx");
+    Serial.println();
+    
 }

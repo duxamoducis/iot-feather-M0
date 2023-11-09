@@ -18,6 +18,7 @@ String indoor_pressure;
 String indoor_temperature;
 String spectrum;
 String visible_light_sensor;
+String light;
 ButtonType_t flag = NOT_PRESSED; // A button interrupt flag
 clock_t last_request;
 
@@ -41,7 +42,7 @@ void setup()
 {
   /* Begins Serial at 115200 baud */
   Serial.begin(115200);
-
+  //Wire.begin();
   /* Wait for Serial to init*/
   while (!Serial)
     {
@@ -57,10 +58,12 @@ void setup()
   BME280_Init();
   
   /* Initialize MCP9808 sensor */
-  //MCP9808_Init();
-
+  //MCP9808_Init()
  /* Initialize AS7262 sensor */
   AS7262_Init();
+
+  /* Initialize BH1750 sensor */
+  BH1750_Init();
 
   /* WiFi client setup, WiFi network connection */
   WiFiSetup();
@@ -121,13 +124,7 @@ void OnButtonPress(ButtonType_t btn)
     if(BME_ACTIVE)
     {
     Display_ShowData(INDOOR);
-    Serial.println("INDOOR MEASUREMENTS - BME280");
-    Serial.println("Temperature:");
-    Serial.println(BME280_temperature());
-    Serial.println("Humidity:");
-    Serial.println(BME280_humidity());
-    Serial.println("Pressure:");
-    Serial.println(BME280_pressure());
+    
     }
     else
     {
@@ -135,9 +132,10 @@ void OnButtonPress(ButtonType_t btn)
       Display_ShowData(ERROR);
     }
 
-    delay(7000);
+    delay(2000);
     Display_Clear();
     break;
+
   case C:
   /* MCP9808_Read();
     Display_ShowData(INDOOR_TEMP_PRECISE);
@@ -147,6 +145,7 @@ void OnButtonPress(ButtonType_t btn)
     delay(2000);
     Display_Clear();
   */
+
     AS7262_Read();
     if(AMS_ACTIVE)
     {
@@ -157,10 +156,27 @@ void OnButtonPress(ButtonType_t btn)
       Display_Clear();
       Display_ShowData(ERROR);
     }
-    delay(7000);
+    delay(3000);
+    Display_Clear();
+    
+   
+    BH1750_Read();
+    if(BH_ACTIVE)
+    {
+      Display_ShowData(LIGHT);
+      
+    }
+    else
+    {
+      Display_Clear();
+      Display_ShowData(ERROR);
+    }
+    delay(3000);
     Display_Clear();
     break;
-  default:
+    
+
+    default:
     break;
   }
 }
@@ -189,11 +205,12 @@ void MakeRequest()
   Serial.println(feelslike_temperature);
   Serial.println(pressure);
   Serial.println(humidity);
+  Serial.println(light);
 
   Display_ShowData(INFO);
   delay(2000);
   Display_ShowData(TEMPERATURE);
-  delay(5000);
+  delay(2000);
   Display_Clear();
 }
 
@@ -250,6 +267,12 @@ void Display_ShowData(DataType_t data)
     display.println("Light sensor - AS7262");
     display.println(indoor_temperature);
     display.println(spectrum);
+    display.display();
+    break;
+  case LIGHT:
+    Display_Clear();
+    display.println("Light sensor - BH1750");
+    display.println(light);
     display.display();
     break;
   case ERROR:
