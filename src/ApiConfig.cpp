@@ -2,6 +2,7 @@
 
 char host_name[] = "api.openweathermap.org";
 String weather_api = "https://api.openweathermap.org/data/2.5/weather";
+
 String req_base = "?appid=" + String(API_KEY) + "&units=metric";
 
 String query1 = "&lat=" + String(GDA_LAT) + "&lon=" + String(GDA_LON);

@@ -21,5 +21,7 @@ extern void PrintWiFiStatus();
 
 /* API Call */
 extern void ApiRequest();
+extern void IpRequest();
+extern void GeoRequest();
 
 #endif /* WEBCLIENT_H */

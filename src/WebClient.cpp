@@ -6,6 +6,10 @@ char ssid[] = WIFI_SSID;
 char pass[] = WIFI_PASS;
 bool req_error = false;
 
+String publicIP = "";
+
+int port = 80;
+
 int status = WL_IDLE_STATUS;
 
 WiFiClient client;
@@ -52,6 +56,7 @@ void PrintWiFiStatus()
   Serial.print("Signal (RSSI): ");
   Serial.print(rssi);
   Serial.println("dBm");
+
 }
 
 void ApiRequest()
@@ -85,6 +90,7 @@ void ApiRequest()
     client.println("Host: " + String(host_name));
     client.println("Connection: close");
     client.println();
+   
 
     /* Error handling */
     if (client.println() == 0)
@@ -119,3 +125,53 @@ void ApiRequest()
     req_error = true;
   }
 }
+
+void IpRequest(){
+  client.connect("wtfismyip.com", 80);
+  client.println("GET /text HTTP/1.1");
+  client.println("Host: wtfismyip.com");
+  client.println("Connection: close");
+  client.println();
+  bool ipStart = false;
+  int newLineCount = 0; // Variable to count the number of newline characters
+  while(client.connected()) {
+    while(client.available()) {
+      char c = client.read();
+      if(c == '\n'){
+        newLineCount++; // Increment the count when a newline character is encountered
+        if(newLineCount == 8){ // Start writing only when IPv4 adress appear
+          ipStart = true; // Start recording after the 8th newline character
+        }
+      }
+      if(ipStart){
+        publicIP += c; // Append each character of adress to the publicIP variable
+      }
+    }
+  }
+  client.stop();
+  Serial.print("Public IP: ");
+  Serial.println(publicIP);
+}
+
+void GeoRequest(){
+  client.connect("ip-api.com", 80);
+  client.println("GET /json/46.113.0.109 HTTP/1.1");
+  client.println("Host: ip-api.com");
+  client.println("Connection: close");
+  client.println();
+
+  while(client.connected()) {
+    while(client.available()) {
+      char c = client.read();
+      //publicIP += c; // Append each character to the publicIP variable
+      Serial.print(c);
+    }
+  }
+  client.stop();
+
+  // Print the public IP
+  Serial.print("Public IP: ");
+  Serial.println(publicIP);
+
+}
+
