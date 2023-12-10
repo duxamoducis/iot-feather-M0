@@ -1,5 +1,7 @@
 #include "WebClient.h"
 #include "Display.h"
+#include "String.h"
+
 
 int city = 0;
 char ssid[] = WIFI_SSID;
@@ -7,6 +9,8 @@ char pass[] = WIFI_PASS;
 bool req_error = false;
 
 String publicIP = "";
+String lat = "";
+String lon = "";
 
 int port = 80;
 
@@ -15,6 +19,7 @@ int status = WL_IDLE_STATUS;
 WiFiClient client;
 
 void PrintWiFiStatus();
+
 
 void WiFiSetup()
 {
@@ -61,6 +66,7 @@ void PrintWiFiStatus()
 
 void ApiRequest()
 {
+  String requestCurrent = HTTP_METHOD + weather_api + req_base + "&lat=" + lat + "&lon=" + lon + " HTTP/1.1";
   city ++;
   client.setTimeout(10000); /* 10s connection and request timeout */
   Serial.println("\nAttempting connection...");
@@ -75,15 +81,28 @@ void ApiRequest()
     if(city == 1)
     {
       client.println(requestGda);
+      Serial.print("DEBUG_GDA: ");
+      Serial.println(requestGda);
     }
     else if (city == 2)
     {
       client.println(requestWaw);
+      Serial.print("DEBUG_WAR: ");
+      Serial.println(requestWaw);
+
     }
     else if (city == 3)
     {
-      city = 0;
       client.println(requestKra);
+      Serial.print("DEBUG_KRA: ");
+      Serial.println(requestKra);
+    }
+    else if (city == 4){
+      client.println(requestCurrent);
+      Serial.print("DEBUG_Current: ");
+      Serial.println(requestCurrent);
+      city = 0;
+
     }
     else;
 
@@ -125,7 +144,9 @@ void ApiRequest()
     req_error = true;
   }
 }
-
+/*
+  Get IPv4 adress from exnternal API and assign it to publicIP
+*/
 void IpRequest(){
   client.connect("wtfismyip.com", 80);
   client.println("GET /text HTTP/1.1");
@@ -140,38 +161,72 @@ void IpRequest(){
       if(c == '\n'){
         newLineCount++; // Increment the count when a newline character is encountered
         if(newLineCount == 8){ // Start writing only when IPv4 adress appear
-          ipStart = true; // Start recording after the 8th newline character
+          ipStart = true; // Start recording after the 8th newline characten
         }
       }
-      if(ipStart){
-        publicIP += c; // Append each character of adress to the publicIP variable
+      if(ipStart && c!='\n'){
+        publicIP += c; // Append each character of the adress to the publicIP variable
       }
     }
   }
   client.stop();
-  Serial.print("Public IP: ");
-  Serial.println(publicIP);
 }
-
+/*
+  Get longitude and latitude from given IP adress
+*/
 void GeoRequest(){
-  client.connect("ip-api.com", 80);
-  client.println("GET /json/46.113.0.109 HTTP/1.1");
+  String geo_request = "GET /json/" + publicIP + " HTTP/1.1";
+  client.connect("ip-api.com", HTTP_PORT);
+  Serial.println("DRUKUJE API:");
+  Serial.println(geo_request);
+  client.println(geo_request);
   client.println("Host: ip-api.com");
   client.println("Connection: close");
   client.println();
 
+  String buffer = "";
+  bool latFound = false;
+  bool lonFound = false;
+
   while(client.connected()) {
     while(client.available()) {
-      char c = client.read();
-      //publicIP += c; // Append each character to the publicIP variable
-      Serial.print(c);
+      char ch = client.read();
+      buffer += ch; // Append each character to the buffer variable
+
+      if (buffer.endsWith("lat\":")) {
+        latFound = true;
+        buffer = ""; // Reset the buffer
+      } else if (buffer.endsWith("lon\":")) {
+        lonFound = true;
+        buffer = ""; // Reset the buffer
+      }
+
+      if ((latFound && lat.length() < 7) && ch != ':' ) {
+        lat += ch;
+      } else if (lonFound && lon.length() < 7 && ch != ':') {
+        lon += ch;
+      }
+      // DEBUG
+      //Serial.print(ch);
     }
   }
-  client.stop();
+  /*DEBUG*/
+  /*
+  Serial.print("lat: ");
+  Serial.print(lat);
+  Serial.print("lon: ");
+  Serial.print(lon);
 
-  // Print the public IP
-  Serial.print("Public IP: ");
-  Serial.println(publicIP);
+  Serial.print("current_lat: ");
+    client.stop();
+
+    // Print the public IP
+    Serial.print("Public IP: ");
+    Serial.println(publicIP);*/
 
 }
+
+
+
+
 

@@ -72,9 +72,8 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(BUTTON_A), Interrupt_ButtonA, RISING);
   attachInterrupt(digitalPinToInterrupt(BUTTON_B), Interrupt_ButtonB, RISING);
   attachInterrupt(digitalPinToInterrupt(BUTTON_C), Interrupt_ButtonC, RISING);
-  GeoRequest();
-  delay(5000);
   IpRequest();
+  GeoRequest();
 
   /* Make the first request */
   MakeRequest();
