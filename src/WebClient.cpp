@@ -64,10 +64,10 @@ void PrintWiFiStatus()
 
 }
 
-void ApiRequest()
+void ApiRequest(int i)
 {
+  city = i;
   String requestCurrent = HTTP_METHOD + weather_api + req_base + "&lat=" + lat + "&lon=" + lon + " HTTP/1.1";
-  city ++;
   client.setTimeout(10000); /* 10s connection and request timeout */
   Serial.println("\nAttempting connection...");
 

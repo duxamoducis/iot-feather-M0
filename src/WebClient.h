@@ -24,7 +24,7 @@ extern void WiFiSetup();
 extern void PrintWiFiStatus();
 
 /* API Call */
-extern void ApiRequest();
+extern void ApiRequest(int i);
 extern void IpRequest();
 extern void GeoRequest();
 

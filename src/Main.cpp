@@ -21,6 +21,8 @@ String visible_light_sensor;
 String light;
 ButtonType_t flag = NOT_PRESSED; // A button interrupt flag
 clock_t last_request;
+int temp_i=1;
+int i=temp_i;
 
 /* Private function prototypes*/
 void OnButtonPress(ButtonType_t btn);
@@ -28,7 +30,7 @@ void Interrupt_ButtonA();
 void Interrupt_ButtonB();
 void Interrupt_ButtonC();
 void Display_ShowData(DataType_t data);
-void MakeRequest();
+void MakeRequest(int i);
 void SendAndDisplayRequest();
 void DisplayBmeData();
 void DisplayMcpData();
@@ -40,6 +42,7 @@ bool ValidateRequestInterval();
 
 void setup()
 {
+
   /* Begins Serial at 115200 baud */
   Serial.begin(115200);
   //Wire.begin();
@@ -76,49 +79,245 @@ void setup()
   GeoRequest();
 
   /* Make the first request */
-  MakeRequest();
+  //MakeRequest(1);
 }
 
 void loop()
 {
   if (flag == A)
-  {
+  { switch(temp_i) //Przycisk A
+    {
+    case 1:
+	  temp_i=2;
+	  break;
+    case 2:
+	    temp_i=3;
+	    break;
+    case 3:
+	    temp_i=4;
+	    break;
+    case 4:
+	    temp_i=5;
+	    break;
+    case 5:
+	    temp_i=6;
+	    break;
+    case 6:
+	    temp_i=7;
+	    break;
+    case 7:
+	    temp_i=1;
+	    break;
+    }
+    i=temp_i;
     SendAndDisplayRequest();
+    //SendAndDisplayRequest();
+    
   }
   else if (flag == B)
   {
-    DisplayBmeData();
+    switch(temp_i) //Przycisk B
+{
+    case 1:
+      temp_i=7;
+      break;
+    case 2:
+      temp_i=1;
+      break;
+    case 3:
+      temp_i=2;
+      break;
+    case 4:
+      temp_i=3;
+      break;
+    case 5:
+      temp_i=4;
+      break;
+    case 6:
+      temp_i=5;
+      break;
+    case 7:
+      temp_i=6;
+      break;
+}
+    i=temp_i;
+    SendAndDisplayRequest();
+    //DisplayBmeData();
   }
   else if (flag == C)
   {
-    DisplayMcpData();
+    switch(temp_i) // Przycisk C
+    {
+    case 1:
+      temp_i=8;
+      break;
+    case 2:
+      temp_i=9;
+      break;
+    case 3:
+      temp_i=10;
+      break;
+    case 4:
+      temp_i=11;
+      break;
+    case 5:
+      temp_i=12;
+      break;
+    case 6:
+      temp_i=13;
+      break;
+    case 7:
+      temp_i=14;
+      break;
+    case 8:
+      temp_i=1;
+      break;
+    case 9:
+      temp_i=2;
+      break;
+    case 10:
+      temp_i=3;
+      break;
+    case 11:
+      temp_i=4;
+      break;
+    case 12:
+      temp_i=5;
+      break;
+    case 13:
+      temp_i=6;
+      break;
+    case 14:
+      temp_i=7;
+      break;                      
+    }
+    i=temp_i;
+    SendAndDisplayRequest();
+    //DisplayMcpData();
   }
+
+      switch(i)
+    {
+    case 1:
+    Display_Clear();
+    display.println("API Gdansk");
+    display.display();
+    break;
+    case 2:
+    Display_Clear();
+    display.println("API Warszawa");
+    display.display();
+    break;
+    case 3:
+    Display_Clear();
+    display.println("API Krakow");
+    display.display();
+    break;
+    case 4:
+    Display_Clear();
+    display.println("Aktualna lokalizacja");
+    display.display();
+    break;
+    case 5:
+    Display_Clear();
+    display.println("Czujnik BME280");
+    display.display();
+    break;
+    case 6:
+    Display_Clear();
+    display.println("Czujnik AS7262");
+    display.display();
+    break;
+    case 7:
+    Display_Clear();
+    display.println("Czujnik BH1750");
+    display.display();
+    break;
+    case 8:
+    MakeRequest(1);
+    break;
+    case 9:
+    MakeRequest(2);
+    break;
+    case 10:
+    MakeRequest(3);
+    break;
+    case 11:
+    MakeRequest(4);
+    break;
+    case 12:
+    BME280_Read();
+
+        if(BME_ACTIVE)
+        {
+        Display_ShowData(INDOOR);
+        
+        }
+        else
+        {
+          Display_Clear();
+          Display_ShowData(ERROR);
+        }
+
+        delay(2000);
+        Display_Clear();
+    break;
+    case 13:
+        if(AMS_ACTIVE)
+        {
+          Display_ShowData(VISIBLE_LIGHT_SENSOR);
+        }
+        else
+        {
+          Display_Clear();
+          Display_ShowData(ERROR);
+        }
+        delay(3000);
+        Display_Clear();
+    break;
+    case 14:
+        BH1750_Read();
+        if(BH_ACTIVE)
+        {
+          Display_ShowData(LIGHT);
+          
+        }
+        else
+        {
+          Display_Clear();
+          Display_ShowData(ERROR);
+        }
+        delay(3000);
+        Display_Clear();
+        break;
+    }
+
 }
 
 void SendAndDisplayRequest()
 {
-  OnButtonPress(A);
+  //OnButtonPress(A);
   flag = NOT_PRESSED;
 }
 
 void DisplayBmeData()
 {
-  OnButtonPress(B);
+  //OnButtonPress(B);
   flag = NOT_PRESSED;
 }
 
 void DisplayMcpData()
 {
-  OnButtonPress(C);
+  //OnButtonPress(C);
   flag = NOT_PRESSED;
 }
 
-void OnButtonPress(ButtonType_t btn)
+/*void OnButtonPress(ButtonType_t btn)
 {
   switch (btn)
   {
   case A:
-    MakeRequest();
+    //MakeRequest(1);
     break;
   case B:
     BME280_Read();
@@ -139,7 +338,7 @@ void OnButtonPress(ButtonType_t btn)
     break;
 
   case C:
-  /* MCP9808_Read();
+   MCP9808_Read();
     Display_ShowData(INDOOR_TEMP_PRECISE);
     Serial.println("INDOOR TEMPERATURE - MCP9808");
     Serial.println("Precise temperature:");
@@ -148,7 +347,7 @@ void OnButtonPress(ButtonType_t btn)
     Display_Clear();
   */
 
-    AS7262_Read();
+    /*AS7262_Read();
     if(AMS_ACTIVE)
     {
       Display_ShowData(VISIBLE_LIGHT_SENSOR);
@@ -181,11 +380,11 @@ void OnButtonPress(ButtonType_t btn)
     default:
     break;
   }
-}
+}*/
 
-void MakeRequest()
+void MakeRequest(int i)
 {
-  ApiRequest();
+  ApiRequest(i);
   if (req_error)
   {
     Display_FailedMessage();
