@@ -16,6 +16,7 @@ extern Adafruit_SSD1306 display;
 /* Initialize the display */
 extern void Display_InitScreen();
 extern void Display_InitIO();
+uint8_t Display_Init(void);
 
 /* Clear Display */
 extern void Display_Clear();
@@ -31,6 +32,9 @@ extern void Display_SuccessMessage();
 extern void Display_FailedMessage();
 
 /* Display formatted data */
-extern void Display_ShowData();
+void Display_ShowData();
+void Display_print(String);
+
+
 
 #endif /* DISPLAY_H */
