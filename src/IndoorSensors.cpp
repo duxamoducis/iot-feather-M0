@@ -28,14 +28,18 @@ void BME280_Init()
     if (!bme.begin())
     {
         BME_ACTIVE = false;
-        Serial.println();
-        Serial.println(F("Could not find a valid BME280 sensor, check wiring!"));
+        #if DEBUG_PRINT_STATUS == 1u
+            Serial.println();
+            Serial.println(F("Could not find a valid BME280 sensor, check wiring!"));
+        #endif
     }
     else
     {
         BME_ACTIVE = true;
+        #if DEBUG_PRINT_STATUS == 1u
         Serial.println();
         Serial.println("BME280 sensor is active!");
+        #endif
     }
 }
 
@@ -84,6 +88,7 @@ void BME280_Read()
     indoor_pressure = String(BME280_pressure());
     indoor_pressure.concat(" hPa");
 
+    #if DEBUG_PRINT_STATUS == 1u
     Serial.println("INDOOR MEASUREMENTS - BME280");
     Serial.println("Temperature:");
     Serial.println(BME280_temperature());
@@ -92,6 +97,7 @@ void BME280_Read()
     Serial.println("Pressure:");
     Serial.println(BME280_pressure());
     Serial.println();
+    #endif
 }
 /*
 void MCP9808_Init()
@@ -134,14 +140,18 @@ void AS7262_Init()
     if (!ams.begin())
     {
         AMS_ACTIVE = false;
+        #if DEBUG_PRINT_STATUS == 1u
         Serial.println();
         Serial.println(F("Could not find a valid AS7262 sensor, check wiring!"));
+        #endif
     }
     else
     {
         AMS_ACTIVE = true;
+        #if DEBUG_PRINT_STATUS == 1u
         Serial.println();
         Serial.println("AS7262 sensor is active!");
+        #endif
     }
 }
 float AS7262_sensorvalue()
@@ -165,7 +175,7 @@ float AS7262_sensorvalue()
         //read the values!
         ams.readRawValues(sensorValues);
         //ams.readCalibratedValues(calibratedValues);
-
+        #if DEBUG_PRINT_STATUS == 1u
         Serial.print("Temp: "); Serial.print(temp);
         Serial.print(" Violet: "); Serial.print(sensorValues[AS726x_VIOLET]);
         Serial.print(" Blue: "); Serial.print(sensorValues[AS726x_BLUE]);
@@ -174,6 +184,8 @@ float AS7262_sensorvalue()
         Serial.print(" Orange: "); Serial.print(sensorValues[AS726x_ORANGE]);
         Serial.print(" Red: "); Serial.print(sensorValues[AS726x_RED]);
         Serial.println();
+        #endif
+
         return temp;
     }
     else
@@ -210,14 +222,18 @@ void BH1750_Init()
     if (!bh.begin())
     {
         BH_ACTIVE = false;
+        #if DEBUG_PRINT_STATUS == 1u
         Serial.println();
         Serial.println(F("Could not find a valid BH1750 sensor, check wiring!"));
+        #endif
     }
     else
     {
         BH_ACTIVE = true;
+        #if DEBUG_PRINT_STATUS == 1u
         Serial.println();
         Serial.println("BH1750 sensor is active!");
+        #endif
     }
 }
 
@@ -240,10 +256,11 @@ void BH1750_Read()
     light = String(BH_light());
     light.concat(" lx");
 
+    #if DEBUG_PRINT_STATUS == 1u
     Serial.println("INDOOR MEASUREMENTS - BH1750");
     Serial.println("Light:");
     Serial.print(BH_light());
     Serial.println(" lx");
     Serial.println();
-    
+    #endif
 }

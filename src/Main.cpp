@@ -36,26 +36,39 @@ void DisplayBmeData();
 void DisplayMcpData();
 bool ValidateRequestInterval();
 
+static std::map<uint8_t, String> menuMap = {
+    {1, "API Gdansk"},
+    {2, "API Warszawa"},
+    {3, "API Krakow"},
+    {4, "Aktualna lokalizacja"},
+    {5, "Czujnik BME280"},
+    {6, "Czujnik AS7262"},
+    {7, "Czujnik BH1750"},
+  };
+
 /*
  * @brief : Application entry point
  */
 
 void setup()
 {
+  
 
   /* Begins Serial at 115200 baud */
   Serial.begin(115200);
   //Wire.begin();
   /* Wait for Serial to init*/
-  while (!Serial)
-    {
+  
+  for (uint8_t i = 0; i < REINIT_NUMBER; i++)
+  {
+    if(Serial){
+      break;
     }
+    delay(10);
+  }
 
   /* Initialize display and clear it */
-  Display_InitScreen();
-  Display_Clear();
-  Display_InitIO();
-  Display_InitText();
+  Display_Init();
 
    /* Initialize BME280 sensor */
   BME280_Init();
@@ -196,72 +209,42 @@ void loop()
     //DisplayMcpData();
   }
 
-      switch(i)
-    {
-    case 1:
-    Display_Clear();
-    display.println("API Gdansk");
-    display.display();
-    break;
-    case 2:
-    Display_Clear();
-    display.println("API Warszawa");
-    display.display();
-    break;
-    case 3:
-    Display_Clear();
-    display.println("API Krakow");
-    display.display();
-    break;
-    case 4:
-    Display_Clear();
-    display.println("Aktualna lokalizacja");
-    display.display();
-    break;
-    case 5:
-    Display_Clear();
-    display.println("Czujnik BME280");
-    display.display();
-    break;
-    case 6:
-    Display_Clear();
-    display.println("Czujnik AS7262");
-    display.display();
-    break;
-    case 7:
-    Display_Clear();
-    display.println("Czujnik BH1750");
-    display.display();
-    break;
-    case 8:
-    MakeRequest(1);
-    break;
-    case 9:
-    MakeRequest(2);
-    break;
-    case 10:
-    MakeRequest(3);
-    break;
-    case 11:
-    MakeRequest(4);
-    break;
-    case 12:
-    BME280_Read();
+    if(i<=7) {
+      
+      Display_print(menuMap.at(i));
+      
+    } else {
 
-        if(BME_ACTIVE)
-        {
-        Display_ShowData(INDOOR);
-        
-        }
-        else
-        {
+    switch(i){
+      case 8:
+        MakeRequest(1);
+        break;
+      case 9:
+        MakeRequest(2);
+        break;
+      case 10:
+        MakeRequest(3);
+        break;
+      case 11:
+        MakeRequest(4);
+        break;
+      case 12:
+        BME280_Read();
+
+          if(BME_ACTIVE)
+          {
+          Display_ShowData(INDOOR);
+          
+          }
+          else
+          {
+            Display_Clear();
+            Display_ShowData(ERROR);
+          }
+
+          delay(2000);
           Display_Clear();
-          Display_ShowData(ERROR);
-        }
-
-        delay(2000);
-        Display_Clear();
-    break;
+        break;
     case 13:
         if(AMS_ACTIVE)
         {
@@ -291,7 +274,7 @@ void loop()
         Display_Clear();
         break;
     }
-
+  }
 }
 
 void SendAndDisplayRequest()
@@ -398,6 +381,7 @@ void MakeRequest(int i)
   location = String(name) + ", " + String(sys_country);
 
   /* Print to Serial for debug */
+#if DEBUG_PRINT_STATUS == 1u
   Serial.println(location);
   Serial.print(parsed_date);
   Serial.print(" ");
@@ -407,6 +391,7 @@ void MakeRequest(int i)
   Serial.println(pressure);
   Serial.println(humidity);
   Serial.println(light);
+#endif
 
   Display_ShowData(INFO);
   delay(2000);

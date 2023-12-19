@@ -28,7 +28,9 @@ void WiFiSetup()
   /* Check if shield is present */
   if (WiFi.status() == WL_NO_SHIELD)
   {
+    #if DEBUG_PRINT_STATUS == 1u
     Serial.println("WiFi Shield not present!");
+    #endif
     while (true)
     {
       /* Infinite loop, do not continue if no shield */
@@ -38,16 +40,18 @@ void WiFiSetup()
   /* Attempt to initialize connection */
   if (WiFi.status() != WL_CONNECTED)
   {
+    #if DEBUG_PRINT_STATUS == 1u
     Serial.println("\nAttempting connection to: ");
     Serial.println(ssid);
-
+    #endif
     Display_WiFiMessage();
 
     status = WiFi.begin(ssid, pass);
     delay(10000);
   }
-
+  #if DEBUG_PRINT_STATUS == 1u
   Serial.println("\nConnected to:");
+  #endif
   display.println("WiFi connected.");
   display.display();
   PrintWiFiStatus();
@@ -55,12 +59,26 @@ void WiFiSetup()
 
 void PrintWiFiStatus()
 {
+  long rssi = WiFi.RSSI();
+#if DEBUG_PRINT_STATUS == 1u
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
-  long rssi = WiFi.RSSI();
   Serial.print("Signal (RSSI): ");
   Serial.print(rssi);
   Serial.println("dBm");
+#endif
+
+}
+
+
+void RequestProcess(String request, String location){
+  
+  client.println(request); 
+ 
+  #if DEBUG_PRINT_REQUESTS == 1u
+  Serial.print("DEBUG_" + location + ": ");
+  Serial.println(request);
+  #endif
 
 }
 
@@ -69,38 +87,34 @@ void ApiRequest(int i)
   city = i;
   String requestCurrent = HTTP_METHOD + weather_api + req_base + "&lat=" + lat + "&lon=" + lon + " HTTP/1.1";
   client.setTimeout(10000); /* 10s connection and request timeout */
+  #if DEBUG_PRINT_STATUS == 1u
   Serial.println("\nAttempting connection...");
-
+  #endif
   Display_ApiMessage();
 
   if (client.connect(host_name, HTTP_PORT))
   {
+    #if DEBUG_PRINT_STATUS == 1u
     Serial.println("\nConnected to " + String(host_name));
+    #endif
     Display_FetchData();
     /* City order */
     if(city == 1)
     {
-      client.println(requestGda);
-      Serial.print("DEBUG_GDA: ");
-      Serial.println(requestGda);
+      RequestProcess(requestGda, "DEBUG_GDA: ");
+
     }
     else if (city == 2)
     {
-      client.println(requestWaw);
-      Serial.print("DEBUG_WAR: ");
-      Serial.println(requestWaw);
+      RequestProcess(requestWaw, "DEBUG_WAR: ");
 
     }
     else if (city == 3)
     {
-      client.println(requestKra);
-      Serial.print("DEBUG_KRA: ");
-      Serial.println(requestKra);
+      RequestProcess(requestKra, "DEBUG_KRA: ");
     }
     else if (city == 4){
-      client.println(requestCurrent);
-      Serial.print("DEBUG_Current: ");
-      Serial.println(requestCurrent);
+      RequestProcess(requestCurrent, "DEBUG_Current: ");
       city = 0;
 
     }
@@ -114,7 +128,9 @@ void ApiRequest(int i)
     /* Error handling */
     if (client.println() == 0)
     {
+      #if DEBUG_PRINT_STATUS == 1u
       Serial.println("Request failed.");
+      #endif
       req_error = true;
       return;
     }
@@ -124,8 +140,10 @@ void ApiRequest(int i)
     client.readBytesUntil('\r', res_status, sizeof(res_status));
     if (strcmp(res_status, http_200) != 0)
     {
+      #if DEBUG_PRINT_STATUS == 1u
       Serial.print("Unhandled response: ");
       Serial.println(res_status);
+      #endif
       req_error = true;
       return;
     }
@@ -133,14 +151,18 @@ void ApiRequest(int i)
     char end_of_headers[] = "\r\n\r\n";
     if (!client.find(end_of_headers))
     {
+      #if DEBUG_PRINT_STATUS == 1u
       Serial.println("Response invalid.");
+      #endif
       req_error = true;
       return;
     }
   }
   else
   {
+    #if DEBUG_PRINT_STATUS == 1u
     Serial.println("Connection failed.");
+    #endif
     req_error = true;
   }
 }
@@ -177,8 +199,12 @@ void IpRequest(){
 void GeoRequest(){
   String geo_request = "GET /json/" + publicIP + " HTTP/1.1";
   client.connect("ip-api.com", HTTP_PORT);
+  
+  #if DEBUG_PRINT_REQUESTS == 1u
   Serial.println("DRUKUJE API:");
   Serial.println(geo_request);
+  #endif
+
   client.println(geo_request);
   client.println("Host: ip-api.com");
   client.println("Connection: close");
