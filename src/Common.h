@@ -1,0 +1,7 @@
+
+//COMMON FILE 
+
+#define DEBUG_PRINT_REQUESTS 0u
+#define DEBUG_PRINT_STATUS 0u
+
+#define REINIT_NUMBER 10u

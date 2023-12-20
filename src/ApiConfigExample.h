@@ -15,7 +15,7 @@
  *
  */
 
-#define API_KEY "YOUR_API_KEY"
+#define API_KEY "API_KEY"
 
 /* LONDON */
 //#define CITY_LAT 51.5085
@@ -37,11 +37,13 @@ extern char host_name[];
 extern String weather_api;
 extern String req_base;
 
+
 extern String query1;
 extern String query2;
 
 extern String requestWaw;
 extern String requestGda;
 extern String requestKra;
+
 
 #endif /* APICONFIG_H */

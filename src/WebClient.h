@@ -13,6 +13,10 @@
 extern WiFiClient client;
 extern bool req_error;
 
+/*  Current latitude and longtitude*/
+extern String lat;
+extern String lon;
+
 /* Setup WiFi */
 extern void WiFiSetup();
 
@@ -20,6 +24,8 @@ extern void WiFiSetup();
 extern void PrintWiFiStatus();
 
 /* API Call */
-extern void ApiRequest();
+extern void ApiRequest(int i);
+extern void IpRequest();
+extern void GeoRequest();
 
 #endif /* WEBCLIENT_H */

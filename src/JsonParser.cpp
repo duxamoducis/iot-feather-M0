@@ -22,8 +22,11 @@ void ParseJson(Stream &res_data)
 
   if (json_error)
   {
+    #if DEBUG_PRINT_STATUS == 1u
     Serial.print("JSON deserialization failed: ");
     Serial.println(json_error.f_str());
+    #endif
+    
     return;
   }
 
